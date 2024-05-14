@@ -33,14 +33,16 @@ sudo ufw enable
 # Install Go
 
 ```
-cd $HOME && \
-ver="1.22.0" && \
-wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz" && \
-sudo rm -rf /usr/local/go && \
-sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz" && \
-rm "go$ver.linux-amd64.tar.gz" && \
-echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> ~/.bash_profile && \
-source ~/.bash_profile && \
+cd $HOME
+VER="1.21.3"
+wget "https://golang.org/dl/go$VER.linux-amd64.tar.gz"
+sudo rm -rf /usr/local/go
+sudo tar -C /usr/local -xzf "go$VER.linux-amd64.tar.gz"
+rm "go$VER.linux-amd64.tar.gz"
+[ ! -f ~/.bash_profile ] && touch ~/.bash_profile
+echo "export PATH=$PATH:/usr/local/go/bin:~/go/bin" >> ~/.bash_profile
+source $HOME/.bash_profile
+[ ! -d ~/go/bin ] && mkdir -p ~/go/bin
 go version
 
 ```
@@ -52,6 +54,29 @@ git checkout v0.2.11
 make install
 
 ```
+# $HOME
+```
+Cd
+```
+```
+mkdir -p $HOME/.initia/cosmovisor/genesis/bin
+mv /root/initia/build/initiad $HOME/.initia/cosmovisor/genesis/bin/
+
+```
+```
+cd initia
+
+```
+# Syste Link
+```
+sudo ln -s $HOME/.initia/cosmovisor/genesis $HOME/.initia/cosmovisor/current -f
+sudo ln -s $HOME/.initia/cosmovisor/current/bin/initiad /usr/local/bin/initiad -f
+```
+# Download Cosmovisor
+```
+go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@v1.5.0
+```
+
 # cek version
 ```
 initiad version --long
@@ -95,12 +120,12 @@ sudo journalctl -fu initiad -o cat
 ```
 # Create Wallet
 ```
-initiad keys add
+initiad keys add wallet
 
 ```
 # Recover Wallet
 ```
-initiad keys recover
+initiad keys recover wallet
 
 ```
 # Create Moniker
@@ -111,11 +136,33 @@ initiad init [moniker] --chain-id initiation-1
 | Moniker change to your moniker example| 
 | initiad init ditsy --chain-id initiation-1 |
 
-# get genesis.json
+# Genesis addrbook
 ```
-wget https://initia.s3.ap-southeast-1.amazonaws.com/initiation-1/genesis.json
-cp genesis.json ~/.initia/config/genesis.json
+rm ~/.initia/config/genesis.json
+curl -Ls https://raw.githubusercontent.com/molla202/pokemon/main/genesis.json > $HOME/.initia/config/genesis.json
 
+```
+# Port
+```
+echo "export N_PORT="15"" >> $HOME/.bash_profile
+source $HOME/.bash_profile
+```
+```
+sed -i.bak -e "s%:1317%:${N_PORT}317%g;
+s%:8080%:${N_PORT}080%g;
+s%:9090%:${N_PORT}090%g;
+s%:9091%:${N_PORT}091%g;
+s%:8545%:${N_PORT}545%g;
+s%:8546%:${N_PORT}546%g;
+s%:6065%:${N_PORT}065%g" $HOME/.initia/config/app.toml
+```
+```
+sed -i.bak -e "s%:26658%:${N_PORT}658%g;
+s%:26657%:${N_PORT}657%g;
+s%:6060%:${N_PORT}060%g;
+s%:26656%:${N_PORT}656%g;
+s%^external_address = \"\"%external_address = \"$(wget -qO- eth0.me):${N_PORT}656\"%;
+s%:26660%:${N_PORT}660%g" $HOME/.initia/config/config.toml
 ```
 
 # SEED
@@ -152,21 +199,32 @@ sudo systemctl restart initiad && sudo journalctl -u initiad -f -o cat
 # setup validator
 
 ```
-initiad tx mstaking create-validator \
-    --amount=5000000uinit \   # It can be other LP tokens 
-    --pubkey=$(initiad tendermint show-validator) \
-    --moniker="<your_moniker>" \
-    --chain-id="initiation-1" \
-    --from=<key_name> \
-    --commission-rate="0.10" \
-    --commission-max-rate="0.20" \
-    --commission-max-change-rate="0.01" \
-    --identity=<keybase_identity> # (optional) for validator image
+initiad tx staking create-validator \
+  --amount=5000000uinit \
+  --pubkey=$(initiad tendermint show-validator) \
+  --moniker=MONIKER-YAZ \
+  --chain-id=initiation-1 \
+  --commission-rate=0.05 \
+  --commission-max-rate=0.10 \
+  --commission-max-change-rate=0.01 \
+  --min-self-delegation=1 \
+  --from=CUZDAN-ADI-YAZ \
+  --identity="" \
+  --website="" \
+  --details="" \
+  --node=http://localhost:15657 \
+  -y
+
+```
+# Deleget
+
+```
+initiad tx staking delegate $(initiad keys show wallet --bech val -a)  miktar000000uinit --from wallet --node=http://localhost:15657 -y
 
 ```
 
 # Run Node
 ```
-sudo journalctl -fu initiad -o cat
+sudo journalctl -u initiad.service -f --no-hostname -o cat
 
 ```
