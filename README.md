@@ -14,12 +14,12 @@ The minimum hardware requirements for running an Initia node are:
 | Disk: 1 TB SSD Storage
 | Bandwidth: 100 Mbps
 
-#Update 
+# Update 
 ```
 sudo apt update && \
 sudo apt install curl git jq build-essential gcc unzip wget lz4 -y
 ```
-#Open Port
+# Open Port
 ```
 sudo apt install -y ufw
 sudo ufw default allow outgoing
@@ -30,7 +30,7 @@ sudo ufw allow 26656
 sudo ufw enable
 
 ```
-#Install Go
+# Install Go
 
 ```
 cd $HOME && \
@@ -44,7 +44,7 @@ source ~/.bash_profile && \
 go version
 
 ```
-#Clone repo
+# Clone repo
 ```
 git clone https://github.com/initia-labs/initia.git
 cd initia
@@ -52,7 +52,7 @@ git checkout v0.2.11
 make install
 
 ```
-#cek version
+# cek version
 ```
 initiad version --long
 
@@ -64,7 +64,7 @@ name: initia
 server_name: initiad
 version: v0.2.11
 
-#Services
+# Services
 ```
 sudo tee /etc/systemd/system/initiad.service > /dev/null << EOF
 [Unit]
@@ -81,19 +81,19 @@ WantedBy=multi-user.target
 EOF
 
 ```
-#reload
+# reload
 ```
 sudo systemctl daemon-reload
 sudo systemctl enable initiad
 sudo systemctl start initiad
 
 ```
-#Run Node
+# Run Node
 ```
 sudo journalctl -fu initiad -o cat
 
 ```
-#Create Node
+# Create Node
 ```
 initiad init [moniker] --chain-id initiation-1
 
@@ -101,14 +101,14 @@ initiad init [moniker] --chain-id initiation-1
 Moniker change to your moniker example 
 initiad init ditsy --chain-id initiation-1
 
-#get genesis.json
+# get genesis.json
 ```
 wget https://initia.s3.ap-southeast-1.amazonaws.com/initiation-1/genesis.json
 cp genesis.json ~/.initia/config/genesis.json
 
 ```
 
-#SEED
+# SEED
 
 ```
 sed -i -e 's/external_address = \"\"/external_address = \"'$(curl httpbin.org/ip | jq -r .origin)':26656\"/g' ~/.initia/config/config.toml
@@ -131,14 +131,14 @@ initiad tx mstaking create-validator \
 
 ```
 
-#PEERS
+# PEERS
 
 ```
 093e1b89a498b6a8760ad2188fbda30a05e4f300@35.240.207.217:26656
 
 ```
 
-#SEED
+# SEED
 
 ```
 2eaa272622d1ba6796100ab39f58c75d458b9dbc@34.142.181.82:26656
@@ -146,7 +146,7 @@ c28827cb96c14c905b127b92065a3fb4cd77d7f6@testnet-seeds.whispernode.com:25756
 
 ```
 
-#Run Node
+# Run Node
 ```
 sudo journalctl -fu initiad -o cat
 
