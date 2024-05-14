@@ -103,7 +103,7 @@ initiad keys add
 initiad keys recover
 
 ```
-# Create Node
+# Create Moniker
 ```
 initiad init [moniker] --chain-id initiation-1
 
