@@ -93,6 +93,16 @@ sudo systemctl start initiad
 sudo journalctl -fu initiad -o cat
 
 ```
+# Create Wallet
+```
+initiad keys add
+
+```
+# Recover Wallet
+```
+initiad keys recover
+
+```
 # Create Node
 ```
 initiad init [moniker] --chain-id initiation-1
