@@ -7,7 +7,7 @@ Prerequisites
 Hardware/OS Requirements
 The minimum hardware requirements for running an Initia node are:
 
-| Komponen | Spesifikasi minim |
+| Komponen | Hardware/OS Requirements |
 |---------|------------------------|
 | CPU: 4 cores
 | Memory: 16GB RAM
@@ -17,6 +17,14 @@ The minimum hardware requirements for running an Initia node are:
 ```
 sudo apt update && \
 sudo apt install curl git jq build-essential gcc unzip wget lz4 -y
+```
+```
+sudo apt install -y ufw
+sudo ufw default allow outgoing
+sudo ufw default deny incoming
+sudo ufw allow ssh
+sudo ufw allow 1317
+sudo ufw enable
 ```
 ```
 cd $HOME && \
