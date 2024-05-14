@@ -14,10 +14,12 @@ The minimum hardware requirements for running an Initia node are:
 | Disk: 1 TB SSD Storage
 | Bandwidth: 100 Mbps
 
+#Update 
 ```
 sudo apt update && \
 sudo apt install curl git jq build-essential gcc unzip wget lz4 -y
 ```
+#Open Port
 ```
 sudo apt install -y ufw
 sudo ufw default allow outgoing
@@ -26,6 +28,7 @@ sudo ufw allow ssh
 sudo ufw allow 1317
 sudo ufw enable
 ```
+#Install Go
 ```
 cd $HOME && \
 ver="1.22.0" && \
@@ -37,8 +40,36 @@ echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> ~/.bash_profile && \
 source ~/.bash_profile && \
 go version
 ```
+#Clone repo
 ```
+git clone https://github.com/initia-labs/initia.git
 cd initia
 git checkout v0.2.11
 make install
+```
+#Services
+```
+sudo tee /etc/systemd/system/initiad.service > /dev/null << EOF
+[Unit]
+Description=initia node
+After=network-online.target
+[Service]
+User=$USER
+ExecStart=$(which initiad) start
+Restart=on-failure
+RestartSec=10
+LimitNOFILE=10000
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+#reload
+```
+sudo systemctl daemon-reload
+sudo systemctl enable initiad
+sudo systemctl start initiad
+```
+#Run Node
+```
+sudo journalctl -fu initiad -o cat
 ```
