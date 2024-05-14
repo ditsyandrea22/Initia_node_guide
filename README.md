@@ -138,8 +138,7 @@ initiad init [moniker] --chain-id initiation-1
 
 # Genesis addrbook
 ```
-rm ~/.initia/config/genesis.json
-curl -Ls https://raw.githubusercontent.com/molla202/pokemon/main/genesis.json > $HOME/.initia/config/genesis.json
+wget https://initia.s3.ap-southeast-1.amazonaws.com/initiation-1/genesis.json -O $HOME/.initia/config/genesis.json
 
 ```
 # Port
@@ -227,4 +226,23 @@ initiad tx staking delegate $(initiad keys show wallet --bech val -a)  miktar000
 ```
 sudo journalctl -u initiad.service -f --no-hostname -o cat
 
+```
+
+# snapshot for the quick sync is available here
+
+```
+sudo systemctl stop initiad
+
+```
+```
+initiad tendermint unsafe-reset-all --home $HOME/.initia --keep-addr-book
+```
+```
+wget https://rpc-initia-testnet.trusted-point.com/latest_snapshot.tar.lz4
+```
+```
+lz4 -d -c ./latest_snapshot.tar.lz4 | tar -xf - -C $HOME/.initia
+```
+```
+sudo systemctl restart initiad && sudo journalctl -u initiad -f -o cat
 ```
